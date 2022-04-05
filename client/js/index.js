@@ -1,6 +1,6 @@
 var jwt = localStorage.getItem("jwt");
 if (jwt == null) {
-  window.location.href = './login.html'
+  window.location.href = '../login.html'
 }
 
 function loadUser() {
@@ -26,5 +26,5 @@ loadUser();
 
 function logout() {
   localStorage.removeItem("jwt");
-  window.location.href = './login.html'
+  window.location.href = '../login.html'
 }

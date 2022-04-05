@@ -15,6 +15,10 @@ def hello():
 def create_student():
     return jsonify(StudentService().create(request.get_json()))
 
+@app.route('/student/login', methods=["POST"])
+def login_student():
+    return jsonify(StudentService().login(request.get_json()))
+
 if __name__ == "__main__":
     Schema()
     app.run(debug=True)
