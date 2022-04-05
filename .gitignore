@@ -3,3 +3,4 @@ lab3.db
 env/
 .DS_Store
 node_modules
+secret.py
