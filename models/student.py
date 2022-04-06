@@ -1,50 +1,5 @@
 import sqlite3
-
-def _get_query_results(result_set : list):
-    result = [{column: row[i]
-                for i, column in enumerate(result_set[0].keys())}
-                for row in result_set]
-
-    return result
-
-class Schema:
-    def __init__ (self):
-        self.conn = sqlite3.connect('lab3.db')
-        self.create_student_table()
-        self.create_class_table()
-    
-    def __del__(self):
-        self.conn.commit()
-        self.conn.close()
-
-    def create_student_table(self):
-        query = """
-        CREATE TABLE IF NOT EXISTS student (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT NOT NULL UNIQUE,
-            password TEXT NOT NULL,
-            first_name TEXT NOT NULL,
-            last_name TEXT NOT NULL,
-            address TEXT,
-            phone_number TEXT,
-            email TEXT,
-            created_on Date default CURRENT_DATE
-        );
-        """
-
-        self.conn.execute(query)
-
-    def create_class_table(self):
-        query = """
-        CREATE TABLE IF NOT EXISTS class (
-            id INTEGER PRIMARY KEY,
-            title TEXT,
-            description TEXT,
-            created_on Date DEFAULT CURRENT_DATE
-        );
-        """
-
-        self.conn.execute(query)
+from models.functions import _get_query_results
 
 class StudentModel:
     TABLE_NAME = 'student'
@@ -56,7 +11,7 @@ class StudentModel:
     def __del__(self):
         self.conn.commit()
         self.conn.close()
-    
+
     #TODO catch not unique error
     def create(self, params : dict):
         p = (
@@ -72,8 +27,9 @@ class StudentModel:
                 f'address, phone_number, email) values (?, ?, ?, ?, ?, ?, ?);'
 
         self.conn.execute(query, p)
-        
-        return {'data': 'Operation Complete'}
+        student_data = self.get_student({'username': params['username']})
+
+        return student_data
 
     def login(self, params : dict):
         p = (params['username'], params['password'])
@@ -87,11 +43,31 @@ class StudentModel:
         return isValid == 1
 
     # Assumes that the row exists
-    def _get_info(self, params : dict):
-        p = (params.get('username', ''), params.get('id', ''))
+    def get_student(self, params : dict):
+        p = (params.get('username', ''), str(params.get('id', '')))
         query = 'SELECT id, username, first_name, last_name, address, phone_number, email FROM student WHERE username = ? OR id = ?;'
 
         result_set = self.conn.execute(query, p).fetchall()
         result = _get_query_results(result_set)
         
         return result[0]
+
+    def get_classes(self, params : dict):
+        p = (str(params['student_id']))
+        query = f'SELECT class.id AS class_id, class.title AS class_title, class.description AS class_description ' \
+                f'FROM class INNER JOIN student_class ON class.id = student_class.class_id ' \
+                f'WHERE student_class.student_id = ?;'
+
+        result_set = self.conn.execute(query, p).fetchall()
+        result = _get_query_results(result_set)
+
+        return result
+
+    def add_class(self, params : dict):
+        p = (str(params['student_id']), str(params['class_id']))
+        query = f'INSERT INTO student_class (student_id, class_id) values (?, ?);'
+
+        self.conn.execute(query, p)
+        student_schedule = self.get_classes({'student_id' : params['student_id']})
+
+        return student_schedule

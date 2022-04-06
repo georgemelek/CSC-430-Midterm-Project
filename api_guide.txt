@@ -1,0 +1,31 @@
+1.  instatiate virtual env and install requirements outlined in requirements.txt
+        - flask, flask-cors, pyjwt should take care of everything
+
+2.  Start server using 'python app.py' on your first run to instatiate databases, you can keep doing this or
+    use 'flask run' if you set the app
+
+3.  The local host will start at port 5000 and below is the requirement for each endpoint, keep in mind I didn't
+    actually enforce any of these in the code so the request will just fail with a 500 if you mess it up
+
+*** keep in mind spelling and capitalization are vital and every endpoint expects JSON
+
+requires: username, password, first_name, last_name
+optional: address, phone_number, email
+('/student/create', methods=["POST"])
+
+# requires: username, password
+('/student/login', methods=["POST"])
+
+# requires: student_id, class_id
+('/student/addclass', methods=["POST"])
+
+# requires: student id in route param
+('/student/getclasses/<student_id>', methods=["GET"])
+
+# optional: title, description
+('/class/create', methods=["POST"])
+
+('/class/getall', methods=["GET"])
+
+# requires: class id route param
+('/class/<class_id>', methods=["GET"])
