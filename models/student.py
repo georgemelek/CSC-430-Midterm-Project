@@ -44,10 +44,30 @@ class StudentModel:
 
     # Assumes that the row exists
     def get_student(self, params : dict):
-        p = (params.get('username', ''), params.get('id', ''))
+        p = (params.get('username', ''), str(params.get('id', '')))
         query = 'SELECT id, username, first_name, last_name, address, phone_number, email FROM student WHERE username = ? OR id = ?;'
 
         result_set = self.conn.execute(query, p).fetchall()
         result = _get_query_results(result_set)
         
         return result[0]
+
+    def get_classes(self, params : dict):
+        p = (str(params['student_id']))
+        query = f'SELECT class.id AS class_id, class.title AS class_title, class.description AS class_description ' \
+                f'FROM class INNER JOIN student_class ON class.id = student_class.class_id ' \
+                f'WHERE student_class.student_id = ?;'
+
+        result_set = self.conn.execute(query, p).fetchall()
+        result = _get_query_results(result_set)
+
+        return result
+
+    def add_class(self, params : dict):
+        p = (str(params['student_id']), str(params['class_id']))
+        query = f'INSERT INTO student_class (student_id, class_id) values (?, ?);'
+
+        self.conn.execute(query, p)
+        student_schedule = self.get_classes({'student_id' : params['student_id']})
+
+        return student_schedule

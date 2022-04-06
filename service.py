@@ -19,6 +19,12 @@ class StudentService:
             response['status'] = 'complete'
 
         return response
+    
+    def add_class(self, params):
+        return self.model.add_class(params)
+
+    def get_classes(self, params):
+        return self.model.get_classes(params)
 
 class ClassService:
     def __init__(self):
