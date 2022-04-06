@@ -7,19 +7,31 @@ class StudentService:
     def __init__(self):
         self.model = StudentModel()
 
-    def create(self, params):
-        return self.model.create(params)
-    
-    def login(self, params):
-        isValid = self.model.login(params)
+    def _student_info_payload(self, params):
         response = {"status": "incomplete", "jwt" : ""}
-        if isValid:
-            student_data = self.model.get_student({'username' : params['username']})
+        if params['valid']:
+            student_data = self.model.get_student({'username' : params.get('username', ''), 'id' : params.get('id', '')})
             response['jwt'] = jwt.encode(student_data, SECRET_KEY, algorithm="HS256")
             response['status'] = 'complete'
 
         return response
-    
+
+    def create(self, params):
+        data = self.model.create(params)
+        data['valid'] = True
+
+        return self._student_info_payload(data)
+
+    def login(self, params):
+        params['valid'] = self.model.login(params)
+
+        return self._student_info_payload(params)
+
+    def update_info(self, params):
+        params['valid'] = self.model.update_info(params)
+        
+        return self._student_info_payload(params)
+
     def add_class(self, params):
         return self.model.add_class(params)
 

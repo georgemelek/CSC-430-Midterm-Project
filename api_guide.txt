@@ -1,31 +1,49 @@
-1.  instatiate virtual env and install requirements outlined in requirements.txt
+1a. instatiate virtual env, activate, then install requirements outlined in requirements.txt
         - flask, flask-cors, pyjwt should take care of everything
 
-2.  Start server using 'python app.py' on your first run to instatiate databases, you can keep doing this or
-    use 'flask run' if you set the app
+1b. You'll need to create a secret.py file with one variable in it called 'SECRET_KEY' and set it to be any string you want,
+    you'll also use this string to decode the jwt client side
+
+2a.  With the virtual env activated start the server using 'python app.py' on your first run to instatiate databases, you can keep doing this or
+    use 'flask run' if you set the flask_app
+
+2b. Populate your db if you want to, or use your client to populate it.
 
 3.  The local host will start at port 5000 and below is the requirement for each endpoint, keep in mind I didn't
-    actually enforce any of these in the code so the request will just fail with a 500 if you mess it up
+    actually enforce any of these in the code so the request will just fail with a 500 if you mis-input 
 
 *** keep in mind spelling and capitalization are vital and every endpoint expects JSON
+base_url = 'http://127.0.0.1:5000'
 
 requires: username, password, first_name, last_name
 optional: address, phone_number, email
+returns: {'status': 'complete' OR 'incomplete' , 'jwt' : ENCODED({username, password, first_name, last_name, address, phone_number, email}) OR ''}
 ('/student/create', methods=["POST"])
 
-# requires: username, password
+requires: username, password
+returns: {'status': 'complete' OR 'incomplete' , 'jwt' : ENCODED({username, password, first_name, last_name, address, phone_number, email}) OR ''}
 ('/student/login', methods=["POST"])
 
-# requires: student_id, class_id
+requires: student_id, class_id
+returns: [{'class_id', 'class_title', 'class_description'}, ...]
 ('/student/addclass', methods=["POST"])
 
-# requires: student id in route param
+requires: username OR id <- neither are mutable
+optional: first_name, last_name, address, phone_number, email
+returns: {'status': 'complete' OR 'incomplete' , 'jwt' : ENCODED({username, password, first_name, last_name, address, phone_number, email}) OR ''}
+('/student/updateinfo', methods=["POST"])
+
+requires: student id in route param
+returns: [{'class_id', 'class_title', 'class_description'}, ...]
 ('/student/getclasses/<student_id>', methods=["GET"])
 
-# optional: title, description
+optional: title, description
+returns : {'id', 'title', 'description', 'created_on'}
 ('/class/create', methods=["POST"])
 
+returns : [{'id', 'title', 'description', 'created_on'}, ...]
 ('/class/getall', methods=["GET"])
 
-# requires: class id route param
+requires: class id route param
+returns : {'id', 'title', 'description', 'created_on'}
 ('/class/<class_id>', methods=["GET"])

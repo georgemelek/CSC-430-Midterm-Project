@@ -20,16 +20,16 @@ class StudentModel:
             params['first_name'], 
             params['last_name'], 
             params.get('address', ''), 
-            params.get('phone_number', ''), 
+            str(params.get('phone_number', '')), 
             params.get('email', '')
             )
         query = f'INSERT INTO student (username, password, first_name, last_name, ' \
                 f'address, phone_number, email) values (?, ?, ?, ?, ?, ?, ?);'
 
-        self.conn.execute(query, p)
-        student_data = self.get_student({'username': params['username']})
+        cur = self.conn.cursor()
+        cur.execute(query, p)
 
-        return student_data
+        return {'id': cur.lastrowid}
 
     def login(self, params : dict):
         p = (params['username'], params['password'])
@@ -41,6 +41,25 @@ class StudentModel:
         isValid = [x for x in result[0].values()][0]
 
         return isValid == 1
+
+    def update_info(self, params : dict):
+        p = (
+            params.get('first_name', ''),
+            params.get('last_name', ''),
+            params.get('address', ''), 
+            str(params.get('phone_number', '')), 
+            params.get('email', ''),
+            str(params.get('id', '')),
+            params.get('username', '')
+            )
+        query = f'UPDATE student SET first_name = ?, last_name = ?, ' \
+                f'address = ?, phone_number = ?, email = ? ' \
+                f'WHERE id = ? OR username = ?;'
+
+        cur = self.conn.cursor()
+        cur.execute(query, p)
+
+        return cur.rowcount == 1
 
     # Assumes that the row exists
     def get_student(self, params : dict):
