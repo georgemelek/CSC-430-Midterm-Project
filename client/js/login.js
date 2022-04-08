@@ -1,10 +1,3 @@
-// import jwt_decode from 'jwt-decode-es';
- 
-// var token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJnZW9yZ2UiLCJmaXJzdF9uYW1lIjoiZ2VvcmdlIiwibGFzdF9uYW1lIjoibWVsZWsiLCJhZGRyZXNzIjoiIiwicGhvbmVfbnVtYmVyIjoiIiwiZW1haWwiOiIifQ.c5TkXb_zDMM3wsmU9l44ZHwz3zFPdb9XroRaZX5Cr5E";
-// var decoded = jwt_decode(token);
- 
-// console.log(decoded);
-
 var jwt = localStorage.getItem("jwt");
 if (jwt != null) {
   window.location.href = '../html/index.html'
@@ -27,8 +20,8 @@ function login() {
     if (this.readyState == 4) {
       const objects = JSON.parse(this.responseText);
       console.log(objects);
-      if (objects['status'] == 'ok') {
-        localStorage.setItem("jwt", objects['accessToken']);
+      if (objects['status'] == 'complete') {
+        localStorage.setItem("jwt", objects['jwt']);
         Swal.fire({
           text: objects['message'],
           icon: 'success',
