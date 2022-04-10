@@ -38,6 +38,7 @@ function login() {
           confirmButtonText: 'OK'
         });
       }
+      console.log("in login" + xhttp.responseText);
     }
   };
   return false;
