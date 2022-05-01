@@ -8,6 +8,58 @@ if (jwt == null) {
 }
 console.log(decoded);
 
+const btn = document.getElementById('btn');
+
+btn.addEventListener('click', () => {
+  const form = document.getElementById('form');
+
+  if (form.style.display === 'none') {
+    // 👇️ this SHOWS the form
+    form.style.display = 'block';
+  } else {
+    // 👇️ this HIDES the form
+    form.style.display = 'none';
+  }
+});
+
+const submitBtn = document.getElementById('submitBtn');
+submitBtn.addEventListener('click', () => {
+  const firstName = document.getElementById("fname").value;
+  const lastName = document.getElementById("lname").value;
+  const address = document.getElementById("address").value;
+  const pNum = document.getElementById("pnum").value;
+  const email = document.getElementById("email").value;
+  console.log(firstName + " " + lastName + " " + address + " " + pNum + " " + email);
+  const xhttp = new XMLHttpRequest();
+  xhttp.open("POST", "http://127.0.0.1:5000/student/updateinfo");
+  console.log(xhttp.status);
+  xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+  xhttp.send(JSON.stringify({
+    "username": decoded["username"],
+    "first_name": firstName,
+    "last_name": lastName,
+    "address": address,
+    "phone_number": pNum,
+    "email": email,
+  }));
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4) {
+      const objects = JSON.parse(this.responseText);
+      console.log(objects);
+      if (objects['status'] == 'complete') {
+        localStorage.setItem("jwt", objects['jwt']);
+      }
+      console.log(xhttp.responseText);
+    }
+  };
+  return false;
+  loadStudentInfo();
+});
+
+function editInfo(){
+  
+}
+
  function loadStudentInfo() {
   console.log("in loadUser" + decoded["first_name"]);
   document.getElementsByClassName("fname")[0].innerHTML = decoded["first_name"];
@@ -31,7 +83,7 @@ console.log(decoded);
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4) {
       const objects = JSON.parse(this.responseText);
-      console.log("objects" + objects[0]["class_description"]);
+      //console.log("objects" + objects[0]["class_description"]);
       var className = document.getElementsByClassName('course');
       for(var index = 0; index < className.length; index++){
         const currentElement = className[index];
@@ -42,8 +94,8 @@ console.log(decoded);
      
     }
     else {
-      console.log(xhttp.readyState);
-      console.log(xhttp.responseText);
+      //console.log(xhttp.readyState);
+      //console.log(xhttp.responseText);
     }
   };
  }
